@@ -3,9 +3,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/about-us-1", "destination": "/about", "permanent": true },
-    { "source": "/about-3", "destination": "/services", "permanent": true },
-    { "source": "/home", "destination": "/", "permanent": true }
+    { "source": "/about-us-1", "destination": "/about", "statusCode": 301 },
+    { "source": "/about-3", "destination": "/services", "statusCode": 301 },
+    { "source": "/home", "destination": "/", "statusCode": 301 }
   ],
   "headers": [
     {
