@@ -33,7 +33,10 @@ All visible text is the client's own wording from the old Wix pages (`src/data/s
 ## Redirects (301)
 `/about-us-1 → /about`, `/about-3 → /services` in `vercel.json` (and `public/_redirects` for Netlify/Cloudflare).
 
+## Deploy
+Vercel project `fernando-companies-landing`, connected to this repo: every push to `main` deploys to production at https://fernando-companies-landing.vercel.app, and other branches get preview URLs. Set `PUBLIC_WEB3FORMS_KEY` under Project Settings → Environment Variables.
+
 ## Going live
-1. Deploy preview to Vercel; share URL with client.
+1. Share https://fernando-companies-landing.vercel.app with the client.
 2. After approval, Wix → Domains → Manage DNS Records: change the root **A** record and the **www CNAME** to Vercel's values. **Do not touch MX or TXT** (email).
 3. Check SSL, email delivery, redirects, and submit the sitemap in Google Search Console.
