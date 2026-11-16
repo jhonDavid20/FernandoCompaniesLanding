@@ -16,11 +16,12 @@ const others = c.services.filter((s) => !c.servicesIntro.home.some((h) => h.slug
 ---
 <Base title={c.meta.home.title} description={c.meta.home.description}>
   <!-- Hero: their welcome text + the office video -->
-  <section class="bg-ink text-paper" aria-labelledby="hero-title">
+  <section class="relative isolate bg-ink text-paper" aria-labelledby="hero-title">
     <div class="grid lg:min-h-[calc(100svh-5rem)] lg:grid-cols-[1.1fr_1fr]">
-      <div class="flex items-center">
+      <!-- mobile: the first screen is the video with the title at its foot; the rest scrolls up over it -->
+      <div class="hero-copy flex items-center pt-[calc(100svh-4rem-15rem)] sm:pt-[calc(100svh-4rem-17rem)] lg:pt-0">
         <div class="wrap lg:!mr-0 lg:max-w-[42rem] lg:!pr-14">
-          <div class="py-14 lg:py-20">
+          <div class="pb-14 lg:py-20">
             <h1 id="hero-title" class="display rule text-[2.6rem] sm:text-6xl">{c.hero.title}</h1>
             <p class="mt-7 max-w-xl text-lg leading-relaxed text-paper/75">{c.hero.lede}</p>
             <div class="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -124,3 +125,17 @@ const others = c.services.filter((s) => !c.servicesIntro.home.some((h) => h.slug
 
   <CtaBand />
 </Base>
+
+<style>
+  /* Mobile: once the text scrolls past the title it sits on a dark layer, so it reads cleanly over the video. */
+  @media (max-width: 1023px) {
+    .hero-copy {
+      background: linear-gradient(
+        to bottom,
+        transparent calc(100svh - 4rem - 22rem),
+        rgb(17 17 17 / 0.7) calc(100svh - 4rem - 10rem),
+        rgb(17 17 17 / 0.9) calc(100svh - 4rem + 4rem)
+      );
+    }
+  }
+</style>

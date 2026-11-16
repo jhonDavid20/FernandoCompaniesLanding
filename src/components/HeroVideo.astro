@@ -6,7 +6,13 @@ const v = t().hero.video;
 const poster = await getImage({ src: v.poster, width: 1080, format: 'webp', quality: 72 });
 const posterSm = await getImage({ src: v.poster, width: 640, format: 'webp', quality: 70 });
 ---
-<figure class="relative h-[30rem] overflow-hidden bg-charcoal sm:h-[38rem] lg:h-auto">
+<!--
+  Mobile: the video fills the screen behind the hero text and stays pinned while the text scrolls over it.
+  Desktop: it sits in the right column.
+  overflow-clip (not hidden) so the sticky layer keeps working.
+-->
+<figure class="absolute inset-0 -z-10 overflow-clip bg-charcoal lg:relative lg:inset-auto lg:z-auto">
+  <div class="sticky top-16 h-[calc(100svh-4rem)] lg:static lg:h-full">
   <picture>
     <source media="(max-width: 767px)" srcset={posterSm.src} />
     <img
@@ -30,6 +36,9 @@ const posterSm = await getImage({ src: v.poster, width: 640, format: 'webp', qua
   >
     {v.sources.map((s) => <source src={s.src} type="video/mp4" media={s.media} />)}
   </video>
+  <!-- mobile only: darken the bottom so the title over the video stays readable -->
+  <div class="absolute inset-0 bg-gradient-to-b from-ink/10 via-transparent to-ink/90 lg:hidden"></div>
+  </div>
 </figure>
 
 <script>
