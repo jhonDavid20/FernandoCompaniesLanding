@@ -1,0 +1,147 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import { business, t } from '@/data/site';
+
+const c = t();
+const f = c.contact.form;
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
+const configured = Boolean(accessKey);
+
+const field = 'mt-2 block w-full border border-line bg-white px-3 py-3 text-base text-ink placeholder:text-mute/60 focus:border-ink focus:outline-none focus-visible:outline-3 focus-visible:outline-gold';
+const label = 'block text-sm font-bold';
+---
+<Base title={c.meta.contact.title} description={c.meta.contact.description}>
+  <PageHero eyebrow={c.contact.eyebrow} title={c.contact.title} lede={c.contact.lede} image={c.backgrounds.contactPage} />
+
+  <section class="py-16 lg:py-24">
+    <div class="wrap grid gap-14 lg:grid-cols-[1.5fr_1fr] lg:gap-20">
+      <!-- Form -->
+      <div>
+        {!configured && (
+          <p class="mb-6 border-l-4 border-gold bg-stone p-4 text-sm" role="note">{f.notConfigured}</p>
+        )}
+        <form
+          id="contact-form"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="grid gap-6 sm:grid-cols-2"
+          data-sending={f.sending}
+          data-success={f.success}
+          data-error={f.error}
+        >
+          <input type="hidden" name="access_key" value={accessKey ?? ''} />
+          <input type="hidden" name="subject" value="New message — fernandocompanies.com" />
+          <input type="hidden" name="from_name" value="Fernando Companies website" />
+          <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <div>
+            <label for="first_name" class={label}>{f.firstName}</label>
+            <input id="first_name" name="first_name" type="text" autocomplete="given-name" required class={field} />
+          </div>
+          <div>
+            <label for="last_name" class={label}>{f.lastName}</label>
+            <input id="last_name" name="last_name" type="text" autocomplete="family-name" required class={field} />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="email" class={label}>{f.email}</label>
+            <input id="email" name="email" type="email" autocomplete="email" required class={field} />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="message" class={label}>{f.message}</label>
+            <textarea id="message" name="message" rows="6" required class={field}></textarea>
+          </div>
+          <div class="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center">
+            <button type="submit" class="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50" disabled={!configured}>
+              {f.submit} <span class="arrow" aria-hidden="true">→</span>
+            </button>
+            <p id="form-status" class="text-sm font-semibold" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Direct contact + offices -->
+      <aside class="space-y-10">
+        <div class="bg-ink p-6 text-paper sm:p-8">
+          <a href={business.phone.href} class="display block text-4xl hover:text-gold">{business.phone.display}</a>
+          <a href={`mailto:${business.email}`} class="link mt-3 inline-block break-all">{business.email}</a>
+        </div>
+
+        <div>
+          <h2 class="eyebrow text-gold-deep">{c.contact.officesTitle}</h2>
+          <ul class="mt-4 space-y-6">
+            {business.offices.map((o) => {
+              const q = encodeURIComponent(o.mapQuery);
+              return (
+                <li class="border border-line bg-paper">
+                  <div class="p-5">
+                    <p class="font-bold">{o.label}</p>
+                    <address class="mt-1 text-mute not-italic">
+                      {o.street}, {o.suite}<br />{o.city}, {o.region} {o.postalCode}
+                    </address>
+                    <div class="mt-4 flex gap-5 text-sm font-semibold">
+                      <button type="button" class="link" data-map={`https://www.google.com/maps?q=${q}&output=embed`} data-map-title={`Map of ${o.label}`} aria-controls={`map-${o.id}`}>
+                        {c.contact.showMap}
+                      </button>
+                      <a class="link" href={`https://www.google.com/maps/dir/?api=1&destination=${q}`} rel="noopener" target="_blank">
+                        {c.contact.directions}<span class="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    </div>
+                  </div>
+                  <div id={`map-${o.id}`} class="hidden aspect-[4/3] border-t border-line bg-stone"></div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Maps load only on request: keeps third-party weight off the page.
+  document.querySelectorAll<HTMLButtonElement>('[data-map]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const box = document.getElementById(btn.getAttribute('aria-controls')!);
+      if (!box) return;
+      if (!box.firstChild) {
+        const frame = document.createElement('iframe');
+        frame.src = btn.dataset.map!;
+        frame.title = btn.dataset.mapTitle ?? 'Map';
+        frame.loading = 'lazy';
+        frame.referrerPolicy = 'no-referrer-when-downgrade';
+        frame.className = 'size-full border-0';
+        box.appendChild(frame);
+      }
+      box.classList.remove('hidden');
+      btn.remove();
+    });
+  });
+
+  // Progressive enhancement: without JS the form posts directly to Web3Forms.
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status) return;
+    const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    btn.disabled = true;
+    status.textContent = form.dataset.sending ?? '';
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(form),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.message);
+      form.reset();
+      status.textContent = form.dataset.success ?? '';
+    } catch {
+      status.textContent = form.dataset.error ?? '';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>

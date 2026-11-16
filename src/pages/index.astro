@@ -1,0 +1,126 @@
+---
+import Base from '@/layouts/Base.astro';
+import HeroVideo from '@/components/HeroVideo.astro';
+import ProjectBand from '@/components/ProjectBand.astro';
+import ParallaxBg from '@/components/ParallaxBg.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import LogoGrid from '@/components/LogoGrid.astro';
+import Testimonial from '@/components/Testimonial.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { business, t } from '@/data/site';
+
+const c = t();
+const bySlug = Object.fromEntries(c.services.map((s) => [s.slug, s]));
+const cards = c.servicesIntro.home.map((h) => ({ service: bySlug[h.slug]!, image: h.image }));
+const others = c.services.filter((s) => !c.servicesIntro.home.some((h) => h.slug === s.slug));
+---
+<Base title={c.meta.home.title} description={c.meta.home.description}>
+  <!-- Hero: their welcome text + the office video -->
+  <section class="bg-ink text-paper" aria-labelledby="hero-title">
+    <div class="grid lg:min-h-[calc(100svh-5rem)] lg:grid-cols-[1.1fr_1fr]">
+      <div class="flex items-center">
+        <div class="wrap lg:!mr-0 lg:max-w-[42rem] lg:!pr-14">
+          <div class="py-14 lg:py-20">
+            <h1 id="hero-title" class="display rule text-[2.6rem] sm:text-6xl">{c.hero.title}</h1>
+            <p class="mt-7 max-w-xl text-lg leading-relaxed text-paper/75">{c.hero.lede}</p>
+            <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+              <a href="/contact" class="btn btn-primary">{c.cta.primary} <span class="arrow" aria-hidden="true">→</span></a>
+              <a href="/services" class="btn btn-ghost">{c.hero.secondary}</a>
+            </div>
+            <dl class="mt-14 grid max-w-lg grid-cols-3 gap-4 sm:gap-6 border-t border-white/15 pt-6">
+              {c.hero.facts.map((f) => (
+                <div class="flex flex-col gap-1">
+                  <dt class="text-xs leading-snug text-paper/60">{f.label}</dt>
+                  <dd class="display order-first text-xl text-gold sm:text-2xl">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </div>
+      <HeroVideo />
+    </div>
+  </section>
+
+  <!-- Services: title over a large background photo, then the list -->
+  <section aria-labelledby="services-title">
+    <div class="relative isolate flex min-h-[38svh] items-end overflow-clip bg-ink text-paper lg:min-h-[44svh]">
+      <ParallaxBg src={c.backgrounds.services} overlay={55} position="center 40%" />
+      <div class="wrap pb-12 pt-24 lg:pb-16">
+        <h2 id="services-title" class="display rule text-5xl sm:text-7xl">{c.servicesIntro.title}</h2>
+      </div>
+    </div>
+    <div class="wrap py-16 lg:py-24">
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card, i) => <ServiceCard service={card.service} image={card.image} index={i} />)}
+      </div>
+      <div class="mt-10 flex flex-col gap-6 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-mute">
+          <span class="eyebrow mr-3 text-gold-deep">{c.servicesIntro.alsoLabel}</span>
+          {others.map((s, i) => (
+            <>
+              <a href={`/services#${s.slug}`} class="font-serif text-lg text-ink hover:text-gold-deep">{s.name}</a>{i < others.length - 1 && <span class="mx-2" aria-hidden="true">·</span>}
+            </>
+          ))}
+        </p>
+        <a href="/services" class="btn btn-ghost shrink-0">{c.servicesIntro.more} <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects: dark block with full-screen parallax photo bands, as on the old site -->
+  <section id="projects" class="scroll-mt-20 bg-ink text-paper" aria-label={c.projects.title}>
+    {c.projects.groups.map((g, i) => <ProjectBand group={g} index={i} />)}
+  </section>
+
+  <!-- Clients -->
+  <section class="py-20 lg:py-28" aria-labelledby="clients-title">
+    <div class="wrap grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:items-center">
+      <h2 id="clients-title" class="display rule text-4xl sm:text-5xl">{c.clients.title}</h2>
+      <LogoGrid items={c.clients.items} />
+    </div>
+  </section>
+
+  <!-- Why choose us + testimonial -->
+  <section class="bg-ink py-20 text-paper lg:py-32" aria-labelledby="why-title">
+    <div class="wrap grid gap-16 lg:grid-cols-2 lg:gap-20">
+      <div>
+        <h2 id="why-title" class="display rule text-4xl sm:text-5xl">{c.whyUs.title}</h2>
+        <p class="mt-6 font-serif text-2xl leading-snug">{c.whyUs.lede}</p>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-paper/75">{c.whyUs.body}</p>
+      </div>
+      <div class="lg:border-l lg:border-white/10 lg:pl-20">
+        <Testimonial />
+      </div>
+    </div>
+  </section>
+
+  <!-- Offices + group companies -->
+  <section class="bg-stone py-20 lg:py-28" aria-labelledby="offices-title">
+    <div class="wrap grid gap-16 lg:grid-cols-[1.2fr_1fr]">
+      <div>
+        <h2 id="offices-title" class="display rule text-4xl sm:text-5xl">{c.offices.title}</h2>
+        <div class="mt-10 grid gap-6 sm:grid-cols-2">
+          {business.offices.map((o) => (
+            <div class="bg-paper p-6">
+              <p class="font-serif text-2xl">{o.label}</p>
+              <address class="mt-4 border-t border-line pt-4 not-italic text-mute">
+                {o.street}, {o.suite}<br />{o.city}, {o.region} {o.postalCode}
+              </address>
+              <a href={business.phone.href} class="link mt-4 inline-block text-sm font-bold">{business.phone.display}</a>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h2 class="display rule text-3xl sm:text-4xl">{c.group.title}</h2>
+        <LogoGrid items={c.group.companies} class="mt-8 !grid-cols-1 sm:!grid-cols-3 lg:!grid-cols-1 xl:!grid-cols-3" />
+        {business.academy.url && (
+          <a href={business.academy.url} class="link mt-6 inline-block font-bold">{business.academy.name} →</a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

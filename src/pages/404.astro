@@ -1,0 +1,11 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import { t } from '@/data/site';
+const c = t();
+---
+<Base title={c.meta.notFound.title} description={c.meta.notFound.description} noindex>
+  <PageHero eyebrow="404" title={c.notFound.title} lede={c.notFound.lede}>
+    <a href="/" class="btn btn-primary mt-8">{c.notFound.back}</a>
+  </PageHero>
+</Base>

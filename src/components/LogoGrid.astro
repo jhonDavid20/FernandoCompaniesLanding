@@ -1,0 +1,23 @@
+---
+import { Image } from 'astro:assets';
+import type { Logo } from '@/data/site';
+interface Props { items: Logo[]; class?: string }
+const { items, class: cls = '' } = Astro.props;
+---
+<ul class:list={['grid grid-cols-2 border-l border-t border-line sm:grid-cols-3', cls]}>
+  {items.map((l) => {
+    const inner = (
+      <>
+        <span class="flex h-24 items-center justify-center">
+          <Image src={l.logo} alt="" width={240} class="max-h-20 w-auto max-w-[80%] object-contain" />
+        </span>
+        <span class="mt-3 block text-center text-sm font-semibold leading-snug">{l.name}</span>
+      </>
+    );
+    return (
+      <li class="border-b border-r border-line bg-white p-5">
+        {l.url ? <a href={l.url} rel="noopener" class="block hover:opacity-80">{inner}</a> : inner}
+      </li>
+    );
+  })}
+</ul>

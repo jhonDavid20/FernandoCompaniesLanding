@@ -1,0 +1,70 @@
+---
+import { Image } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { t } from '@/data/site';
+const c = t();
+const core = c.services.filter((s) => s.tier === 'core');
+const extra = c.services.filter((s) => s.tier === 'complementary');
+---
+<Base title={c.meta.services.title} description={c.meta.services.description}>
+  <PageHero eyebrow="Services" title={c.servicesIntro.title} image={c.backgrounds.servicesPage} position="center 40%">
+    <nav aria-label="Services on this page" class="mt-10">
+      <ul class="flex flex-wrap gap-2">
+        {c.services.map((s) => (
+          <li><a href={`#${s.slug}`} class="inline-block border border-white/25 px-3 py-2 font-serif italic hover:border-gold hover:text-gold">{s.name}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </PageHero>
+
+  <section class="py-20 lg:py-28" aria-labelledby="core-title">
+    <div class="wrap">
+      <h2 id="core-title" class="eyebrow text-gold-deep">{c.servicesIntro.coreLabel}</h2>
+      <div class="mt-10 space-y-20 lg:space-y-28">
+        {core.map((s, i) => (
+          <article id={s.slug} class="grid scroll-mt-24 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+            <div class:list={['parallax-reveal lg:col-span-6', i % 2 === 1 && 'lg:order-2']}>
+              <Image src={s.image.src} alt={s.image.alt} quality={68} widths={[480, 720, 960]} sizes="(min-width: 1024px) 45vw, 100vw" class="aspect-[4/3] w-full object-cover" />
+            </div>
+            <div class:list={['lg:col-span-6', i % 2 === 1 && 'lg:order-1']}>
+              <span class="display text-4xl italic text-gold-deep" aria-hidden="true">{['I', 'II', 'III'][i]}.</span>
+              <h3 class="display mt-2 text-4xl sm:text-5xl">{s.name}</h3>
+              <p class="mt-5 text-lg leading-relaxed text-mute">{s.body}</p>
+              {s.points.length > 0 && (
+                <dl class="mt-8 grid gap-x-8 gap-y-5 border-t border-line pt-6 sm:grid-cols-2">
+                  {s.points.map((pt) => (
+                    <div>
+                      <dt class="font-serif text-xl">{pt.name}</dt>
+                      <dd class="mt-1 text-sm leading-relaxed text-mute">{pt.detail}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink py-20 text-paper lg:py-28" aria-labelledby="extra-title">
+    <div class="wrap">
+      <h2 id="extra-title" class="eyebrow text-gold">{c.servicesIntro.complementaryLabel}</h2>
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+        {extra.map((s) => (
+          <article id={s.slug} class="parallax-reveal scroll-mt-24 border-t-2 border-gold bg-charcoal">
+            <Image src={s.image.src} alt={s.image.alt} quality={68} widths={[400, 640, 800]} sizes="(min-width: 768px) 40vw, 100vw" class="aspect-[16/9] w-full object-cover" />
+            <div class="p-6 sm:p-8">
+              <h3 class="display text-3xl">{s.name}</h3>
+              <p class="mt-4 leading-relaxed text-paper/70">{s.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

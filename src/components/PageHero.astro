@@ -1,0 +1,15 @@
+---
+import type { ImageMetadata } from 'astro';
+import ParallaxBg from './ParallaxBg.astro';
+interface Props { eyebrow: string; title: string; lede?: string; image?: ImageMetadata; position?: string }
+const { eyebrow, title, lede, image, position } = Astro.props;
+---
+<section class="relative isolate overflow-clip bg-ink text-paper" aria-labelledby="page-title">
+  {image && <ParallaxBg src={image} overlay={62} position={position} eager />}
+  <div class:list={['wrap py-16 lg:py-24', image && 'flex min-h-[50svh] flex-col justify-end']}>
+    <p class="eyebrow mb-6 text-gold">{eyebrow}</p>
+    <h1 id="page-title" class="display rule max-w-4xl text-5xl sm:text-7xl">{title}</h1>
+    {lede && <p class="mt-6 max-w-2xl text-lg leading-relaxed text-paper/80 sm:text-xl">{lede}</p>}
+    <slot />
+  </div>
+</section>

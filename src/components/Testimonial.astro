@@ -1,0 +1,19 @@
+---
+import { t } from '@/data/site';
+const { testimonial: q } = t();
+---
+<figure>
+  <blockquote>
+    <p class="display text-3xl italic !leading-[1.25] sm:text-4xl lg:text-[2.6rem]">
+      <span class="text-gold" aria-hidden="true">“</span>{q.quote}<span class="text-gold" aria-hidden="true">”</span>
+    </p>
+  </blockquote>
+  <figcaption class="mt-8 flex items-start gap-4">
+    <span class="mt-3 h-px w-10 shrink-0 bg-gold" aria-hidden="true"></span>
+    <span>
+      <span class="block text-lg font-bold">{q.name}</span>
+      <span class="block opacity-75">{q.role}</span>
+      <cite class="mt-1 block text-sm not-italic opacity-60">{q.source}</cite>
+    </span>
+  </figcaption>
+</figure>

@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Testimonial from '@/components/Testimonial.astro';
+import LogoGrid from '@/components/LogoGrid.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { business, t } from '@/data/site';
+const c = t();
+---
+<Base title={c.meta.about.title} description={c.meta.about.description}>
+  <PageHero eyebrow={c.about.eyebrow} title={c.about.title} image={c.backgrounds.aboutPage} />
+
+  <section class="py-20 lg:py-28" aria-label="Company">
+    <div class="wrap grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:gap-20">
+      <div>
+        <Image src={c.hero.video.poster} alt={c.hero.video.label} widths={[480, 800]} sizes="(min-width: 1024px) 35vw, 100vw" class="aspect-[4/5] w-full object-cover" />
+        <dl class="mt-8 grid grid-cols-2 border-l border-t border-line">
+          <div class="border-b border-r border-line p-5"><dt class="eyebrow text-mute">Established</dt><dd class="display mt-2 text-3xl">{business.founded}</dd></div>
+          <div class="border-b border-r border-line p-5"><dt class="eyebrow text-mute">Founder</dt><dd class="mt-2 font-serif text-2xl">{business.founder}</dd></div>
+          <div class="col-span-2 border-b border-r border-line p-5"><dt class="eyebrow text-mute">Projects</dt><dd class="mt-2">{c.about.buildingTypes}</dd></div>
+        </dl>
+      </div>
+      <div class="space-y-6 text-lg leading-relaxed text-mute">
+        {c.about.body.map((p) => <p>{p}</p>)}
+        <div class="!mt-14 border-t border-line pt-10">
+          <h2 class="display text-4xl text-ink">{c.whyUs.title}</h2>
+          <p class="mt-5 font-serif text-2xl leading-snug text-ink">{c.whyUs.lede}</p>
+          <p class="mt-4">{c.whyUs.body}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-stone py-20 lg:py-28" aria-labelledby="clients-title">
+    <div class="wrap">
+      <h2 id="clients-title" class="display rule text-4xl sm:text-5xl">{c.clients.title}</h2>
+      <LogoGrid items={c.clients.items} class="mt-10 lg:grid-cols-5" />
+    </div>
+  </section>
+
+  <section class="bg-ink py-20 text-paper lg:py-28" aria-label="Testimonial">
+    <div class="wrap max-w-5xl"><Testimonial /></div>
+  </section>
+
+  <CtaBand />
+</Base>

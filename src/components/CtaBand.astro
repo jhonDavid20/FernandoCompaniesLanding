@@ -1,0 +1,16 @@
+---
+import { business, t } from '@/data/site';
+const c = t();
+---
+<section class="bg-ink text-paper" aria-labelledby="cta-band">
+  <div class="wrap grid gap-10 border-t border-white/10 py-16 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:py-24">
+    <div class="max-w-2xl">
+      <h2 id="cta-band" class="display rule text-4xl sm:text-5xl">{c.ctaBand.title}</h2>
+      {c.ctaBand.lede.map((p) => <p class="mt-4 text-lg leading-relaxed text-paper/75">{p}</p>)}
+    </div>
+    <div class="flex flex-col gap-3 sm:flex-row lg:justify-end">
+      <a href="/contact" class="btn btn-primary">{c.cta.primary} <span class="arrow" aria-hidden="true">→</span></a>
+      <a href={business.phone.href} class="btn btn-ghost">{business.phone.display}</a>
+    </div>
+  </div>
+</section>

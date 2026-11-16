@@ -1,0 +1,82 @@
+---
+import { business } from '@/data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+}
+const { title, description, image = '/og.png', noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
+const ogImage = new URL(image, Astro.site);
+
+const [hq, ...branches] = business.offices;
+const postal = (o: (typeof business.offices)[number]) => ({
+  '@type': 'PostalAddress',
+  streetAddress: `${o.street}, ${o.suite}`,
+  addressLocality: o.city,
+  addressRegion: o.region,
+  postalCode: o.postalCode,
+  addressCountry: o.country,
+});
+const orgId = `${business.url}/#organization`;
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'GeneralContractor',
+      '@id': orgId,
+      name: business.name,
+      legalName: business.legalName,
+      url: business.url,
+      logo: `${business.url}/favicon.svg`,
+      image: ogImage.href,
+      description:
+        'Commercial interiors subcontractor: metal stud framing, drywall, acoustic ceilings, finish carpentry, tile, laminate flooring and painting.',
+      foundingDate: String(business.founded),
+      founder: { '@type': 'Person', name: business.founder },
+      telephone: business.phone.e164,
+      email: business.email,
+      address: postal(hq),
+      areaServed: business.states.map((name) => ({ '@type': 'State', name })),
+      ...(business.social.length ? { sameAs: business.social.map((s) => s.url) } : {}),
+      department: branches.map((o) => ({
+        '@type': 'GeneralContractor',
+        '@id': `${business.url}/#office-${o.id}`,
+        name: `${business.name} — ${o.city}, ${o.region}`,
+        telephone: business.phone.e164,
+        email: business.email,
+        address: postal(o),
+        parentOrganization: { '@id': orgId },
+      })),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${business.url}/#website`,
+      url: business.url,
+      name: business.name,
+      inLanguage: 'en-US',
+      publisher: { '@id': orgId },
+    },
+  ],
+};
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical.href} />
+{noindex && <meta name="robots" content="noindex" />}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={business.name} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical.href} />
+<meta property="og:image" content={ogImage.href} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage.href} />
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

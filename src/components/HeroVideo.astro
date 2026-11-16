@@ -1,0 +1,49 @@
+---
+import { getImage } from 'astro:assets';
+import { t } from '@/data/site';
+const v = t().hero.video;
+// Poster is the LCP element; the video only starts after the page has loaded.
+const poster = await getImage({ src: v.poster, width: 1080, format: 'webp', quality: 72 });
+const posterSm = await getImage({ src: v.poster, width: 640, format: 'webp', quality: 70 });
+---
+<figure class="relative h-[30rem] overflow-hidden bg-charcoal sm:h-[38rem] lg:h-auto">
+  <picture>
+    <source media="(max-width: 767px)" srcset={posterSm.src} />
+    <img
+      src={poster.src}
+      alt={v.label}
+      width={poster.attributes.width}
+      height={poster.attributes.height}
+      fetchpriority="high"
+      decoding="async"
+      class="absolute inset-0 size-full object-cover"
+    />
+  </picture>
+  <video
+    class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700"
+    muted
+    loop
+    playsinline
+    preload="none"
+    aria-hidden="true"
+    data-hero-video
+  >
+    {v.sources.map((s) => <source src={s.src} type="video/mp4" media={s.media} />)}
+  </video>
+</figure>
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+  const start = () => {
+    if (!video || reduce.matches || saveData) return;
+    video.addEventListener('playing', () => video.classList.remove('opacity-0'), { once: true });
+    video.play().catch(() => {});
+  };
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
+  reduce.addEventListener('change', () => {
+    if (reduce.matches) video?.pause();
+  });
+</script>

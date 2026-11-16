@@ -1,0 +1,4 @@
+# Used only if deployed to Netlify or Cloudflare Pages (Vercel uses vercel.json)
+/about-us-1  /about     301
+/about-3     /services  301
+/home        /          301
